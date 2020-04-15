@@ -1,5 +1,7 @@
 class PostsController < ApplicationController
 
+  before_action :authenticate_user!, only: [:create, :update]
+
     # manejo de excepciones, se debe tener en cuenta el orden de los rescue, cmoienza desde la ultima hasta la primera 
     rescue_from Exception do |e|
         render json: {error: e.message}, status: :internal_error #error 500
@@ -48,5 +50,23 @@ class PostsController < ApplicationController
 
     def update_params
         params.require(:post).permit(:title, :content, :published)
+    end
+
+    def  authenticate_user!
+        token_regex = /Bearer (\w+)/
+        # leer headers
+        headers = request.headers
+        # verificar que el header sea valido
+        if headers['Autorization'].present? && headers['Autorization'].match(token_regex)
+            token = headers['Autorization'].match(token_regex)[1]
+            # validar que el token pertenezca a un usuario
+            if(Current.user = User.find_by_auth_token(token))
+                return
+            end
+
+        end
+
+        render json: {error: 'Unauthorized'}, status: :unauthorized
+
     end
 end
