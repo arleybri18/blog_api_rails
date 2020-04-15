@@ -3,13 +3,10 @@ FactoryBot.define do
     title { Faker::Lorem.sentence }
     content { Faker::Lorem.paragraph }
     published { [false, true].sample }
+    factory :published_post do
+      published { true }
+    end
     user # hace referencia al factory user
   end
 
-  factory :published_post, class: 'Post' do
-    title { Faker::Lorem.sentence }
-    content { Faker::Lorem.paragraph }
-    published { true }
-    user # hace referencia al factory user
-  end
 end

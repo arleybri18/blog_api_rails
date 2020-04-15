@@ -45,7 +45,7 @@ RSpec.describe 'Post', type: :request do
 
     describe 'GET /posts/:id' do
         #factory bot
-        let!(:post) { create(:post) }  #crea una variable y se le asigna lo que esta en el bloque 
+        let!(:post) { create(:post, published: true)}  #crea una variable y se le asigna lo que esta en el bloque
 
         it 'should return one post' do
             get "/posts/#{post.id}" # se utiliza la variable post creada por factory bot
@@ -61,82 +61,4 @@ RSpec.describe 'Post', type: :request do
             expect(response).to have_http_status(200)            
         end
     end
-
-
-    describe "POST /posts" do
-        let!(:user) { create(:user) } # crear un usuario
-
-        it "should create a post" do
-            req_payload = {
-                post: {
-                    title: "title",
-                    content: "content",
-                    published: false,
-                    user_id: user.id
-                }
-            }
-
-            post '/posts', params: req_payload
-            payload = JSON.parse(response.body)
-            expect(payload).to_not be_empty
-            expect(payload["id"]).to_not be_nil
-            expect(response).to have_http_status(:created)
-        end
-
-        it "should return error message on invalid post" do
-            req_payload = {
-                post: {
-                    content: "content",
-                    published: false,
-                    user_id: user.id
-                }
-            }
-
-            post '/posts', params: req_payload
-            payload = JSON.parse(response.body)
-            expect(payload).to_not be_empty
-            expect(payload["error"]).to_not be_empty
-            expect(response).to have_http_status(:unprocessable_entity)
-        end
-    end
-
-    describe "PUT /posts/:id" do
-        let!(:article) { create(:post) } # crear un post
-
-        it "should update a posts" do
-            req_payload = {
-                post: {
-                    title: "new title",
-                    content: "new content",
-                    published: true
-                }
-            }
-
-            put "/posts/#{article.id}", params: req_payload
-            payload = JSON.parse(response.body)
-            expect(payload).to_not be_empty
-            expect(payload["id"]).to eq(article.id)
-            expect(payload["title"]).to eq("new title")
-            expect(payload["content"]).to eq("new content")
-            expect(payload["published"]).to eq(true)
-            expect(response).to have_http_status(:ok)
-        end
-
-        it "should return an error when update a post" do
-            req_payload = {
-                post: {
-                    title: nil,
-                    content: nil,
-                    published: true
-                }
-            }
-
-            put "/posts/#{article.id}", params: req_payload
-            payload = JSON.parse(response.body)
-            expect(payload).to_not be_empty
-            expect(payload["error"]).to_not be_empty
-            expect(response).to have_http_status(:unprocessable_entity)
-        end
-    end
-
 end

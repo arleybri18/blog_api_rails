@@ -10,7 +10,7 @@ RSpec.describe User, type: :model do
     end
 
     it "validate relations" do
-      should have_many(:post)
+      should have_many(:posts)
     end
   end
 end
