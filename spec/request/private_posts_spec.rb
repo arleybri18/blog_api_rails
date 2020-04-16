@@ -19,7 +19,7 @@ RSpec.describe 'Post with authentication', type: :request do
 
   describe 'GET /posts/{id}' do
     context "with valid auth" do
-
+      before { allow(JsonWebToken).to receive(:verify).and_return([{email: user.email}]) }
       context "when requesting other's author post" do
         context "when post is public" do
           # se hace la peticion al post que esta publico, con el token de auth del usuario principal
@@ -54,6 +54,7 @@ RSpec.describe 'Post with authentication', type: :request do
   describe 'POST /posts' do
     # con auth -> crear
     context "with valid auth" do
+      before { allow(JsonWebToken).to receive(:verify).and_return([{email: user.email}]) }
       before { post "/posts", params: create_params, headers: auth_headers}
       context "payload" do
         subject { payload }
@@ -84,6 +85,7 @@ RSpec.describe 'Post with authentication', type: :request do
   describe 'PUT /posts/{id}' do
     # con auth -> actualizar
     context "with valid auth" do
+      before { allow(JsonWebToken).to receive(:verify).and_return([{email: user.email}]) }
       context "when updating user's post" do
         before { put "/posts/#{user_post.id}", params: update_params, headers: auth_headers}
         context "payload" do
